@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Lap Hoang", email = "hoangduclap102@gmail.com"}
 ]
 keywords = ["dbt", "cypher", "neo4j", "graph", "dependencies", "lineage"]
 classifiers = [
