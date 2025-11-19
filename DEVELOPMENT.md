@@ -9,7 +9,8 @@ pip install uv
 # Create a virtual environment and install dependencies
 uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -e ".[dev]"
+uv pip install -e .
+uv pip install -r requirements-dev.txt
 
 # Install pre-commit hooks
 pre-commit install

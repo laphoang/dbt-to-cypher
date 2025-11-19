@@ -32,15 +32,6 @@ dependencies = [
     "networkx>=3.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "ruff>=0.1.0",
-    "mypy>=1.0",
-    "pre-commit>=3.0",
-]
-
 [project.urls]
 Homepage = "https://github.com/laphoang/dbt-to-cypher"
 Repository = "https://github.com/laphoang/dbt-to-cypher"
@@ -113,4 +104,14 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+    "python-dotenv>=1.0.0",
 ]
