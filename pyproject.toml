@@ -78,7 +78,12 @@ warn_unused_ignores = true
 warn_no_return = true
 follow_imports = "normal"
 ignore_missing_imports = true
-exclude = [".venv", "build", "dist"]
+exclude = [
+    "^\\.venv/",
+    "^build/",
+    "^dist/",
+    "^\\.git/",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
