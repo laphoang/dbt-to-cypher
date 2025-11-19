@@ -121,4 +121,5 @@ dev = [
     "pre-commit>=3.0",
     "python-dotenv>=1.0.0",
     "types-PyYAML>=6.0",
+    "dbt-artifacts-parser>=0.8.2",
 ]
