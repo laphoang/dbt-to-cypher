@@ -32,15 +32,6 @@ dependencies = [
     "networkx>=3.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "ruff>=0.1.0",
-    "mypy>=1.0",
-    "pre-commit>=3.0",
-]
-
 [project.urls]
 Homepage = "https://github.com/laphoang/dbt-to-cypher"
 Repository = "https://github.com/laphoang/dbt-to-cypher"
@@ -75,7 +66,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
@@ -87,6 +78,12 @@ warn_unused_ignores = true
 warn_no_return = true
 follow_imports = "normal"
 ignore_missing_imports = true
+exclude = [
+    "^\\.venv/",
+    "^build/",
+    "^dist/",
+    "^\\.git/",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -113,4 +110,16 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+    "python-dotenv>=1.0.0",
+    "types-PyYAML>=6.0",
+    "dbt-artifacts-parser>=0.8.2",
 ]

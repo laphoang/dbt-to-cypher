@@ -73,7 +73,8 @@ uv venv
 .venv\Scripts\activate  # Windows
 # source .venv/bin/activate  # Linux/Mac
 
-uv pip install -e ".[dev]"
+uv pip install -e .
+uv pip install -r requirements-dev.txt
 
 # Install pre-commit hooks
 pre-commit install
