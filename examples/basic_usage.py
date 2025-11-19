@@ -9,7 +9,7 @@ This example demonstrates how to:
 
 from pathlib import Path
 
-from dbt_to_cypher import CypherGenerator, DependencyGraph, DbtDependencyExtractor
+from dbt_to_cypher import CypherGenerator, DbtDependencyExtractor, DependencyGraph
 
 
 def example_manual_graph():
@@ -38,9 +38,7 @@ def example_manual_graph():
     graph.add_dependency("stg_orders", "customers", "depends_on")
 
     # Add column dependencies
-    graph.add_dependency(
-        "stg_customers.customer_id", "customers.customer_id", "derives_from"
-    )
+    graph.add_dependency("stg_customers.customer_id", "customers.customer_id", "derives_from")
 
     # Generate Cypher queries
     generator = CypherGenerator(graph)
