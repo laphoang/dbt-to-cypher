@@ -40,13 +40,13 @@ uv pip list
 pytest
 
 # Check code formatting
-black --check src tests
-
-# Check import sorting
-isort --check-only src tests
+ruff format --check src tests
 
 # Lint code
-flake8 src tests
+ruff check src tests
+
+# Type check
+mypy src
 
 # Run all pre-commit hooks
 pre-commit run --all-files
@@ -57,8 +57,7 @@ pre-commit run --all-files
 Verify these files exist:
 
 - [ ] `pyproject.toml` - Project metadata (PEP 621)
-- [ ] `.pre-commit-config.yaml` - Pre-commit hooks (black, isort, flake8)
-- [ ] `.flake8` - Flake8 configuration
+- [ ] `.pre-commit-config.yaml` - Pre-commit hooks (ruff, mypy)
 - [ ] `.gitignore` - Git ignore patterns
 - [ ] `LICENSE` - MIT License
 - [ ] `README.md` - Project documentation
@@ -109,10 +108,11 @@ Your typical development workflow should be:
 1. Create feature branch: `git checkout -b feature/my-feature`
 2. Write code
 3. Run tests: `pytest`
-4. Format code: `black src tests` and `isort src tests`
-5. Lint code: `flake8 src tests`
-6. Commit changes (pre-commit hooks run automatically)
-7. Push and create pull request
+4. Format code: `ruff format src tests`
+5. Lint and fix: `ruff check --fix src tests`
+6. Type check: `mypy src`
+7. Commit changes (pre-commit hooks run automatically)
+8. Push and create pull request
 
 ## ✅ Useful Commands
 
@@ -124,7 +124,9 @@ just test         # Run tests
 just test-cov     # Run tests with coverage
 just format       # Format code
 just lint         # Lint code
-just check        # Format + lint
+just lint-fix     # Lint and fix code
+just type-check   # Type check
+just check        # Format + lint + type-check
 just clean        # Clean build artifacts
 ```
 

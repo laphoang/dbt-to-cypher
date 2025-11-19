@@ -26,7 +26,6 @@ dbt-to-cypher/
 │   ├── basic_usage.py               # Basic usage examples
 │   └── README.md                    # Examples documentation
 │
-├── .flake8                          # Flake8 linter configuration
 ├── .gitignore                       # Git ignore patterns
 ├── .pre-commit-config.yaml          # Pre-commit hooks config
 ├── DEVELOPMENT.md                   # Development setup guide
@@ -92,24 +91,15 @@ Modern Python packaging configuration following PEP 621:
 - Project metadata (name, version, description)
 - Dependencies and optional dependencies
 - Build system configuration (hatchling)
-- Tool configurations (black, isort, pytest, coverage)
+- Tool configurations (ruff, mypy, pytest, coverage)
 
 ### `.pre-commit-config.yaml`
 
 Pre-commit hooks that run before each commit:
 
-- `black` - Code formatter (line length: 100)
-- `isort` - Import sorter (black profile)
-- `flake8` - Linter (max line length: 100)
+- `ruff` - Fast linter and formatter (replaces black, isort, flake8)
+- `mypy` - Static type checker
 - Additional checks (trailing whitespace, YAML, JSON, etc.)
-
-### `.flake8`
-
-Flake8 linter configuration:
-
-- Max line length: 100
-- Extends ignore: E203, W503 (black compatibility)
-- Per-file ignores for `__init__.py`
 
 ## Development Tools
 
@@ -130,7 +120,9 @@ Command runner for development tasks.
 just test         # Run tests
 just format       # Format code
 just lint         # Lint code
-just check        # Format + lint
+just lint-fix     # Lint and fix
+just type-check   # Type check
+just check        # Format + lint + type-check
 ```
 
 ### Testing: pytest

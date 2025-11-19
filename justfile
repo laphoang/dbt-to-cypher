@@ -19,21 +19,28 @@ test:
 test-cov:
     pytest --cov=src --cov-report=html --cov-report=term
 
-# Format code with black and isort
+# Format code with ruff
 format:
-    black src tests
-    isort src tests
+    ruff format src tests
 
-# Lint code with flake8
+# Lint code with ruff
 lint:
-    flake8 src tests
+    ruff check src tests
+
+# Lint and fix code with ruff
+lint-fix:
+    ruff check --fix src tests
+
+# Type check with mypy
+type-check:
+    mypy src
 
 # Run all pre-commit hooks
 pre-commit:
     pre-commit run --all-files
 
-# Check code quality (format + lint)
-check: format lint
+# Check code quality (format + lint + type-check)
+check: lint-fix format type-check
 
 # Clean build artifacts
 clean:

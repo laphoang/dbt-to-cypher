@@ -25,11 +25,13 @@ pytest
 pytest --cov=src --cov-report=html
 
 # Format code
-black src tests
-isort src tests
+ruff format src tests
 
-# Lint code
-flake8 src tests
+# Lint and fix code
+ruff check --fix src tests
+
+# Type check
+mypy src
 
 # Run pre-commit on all files
 pre-commit run --all-files
