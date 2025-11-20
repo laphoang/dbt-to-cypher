@@ -19,10 +19,10 @@ def main():
 
         extractor = DbtDependencyExtractor(project_path)
         extractor.load_file()
-        dependencies = extractor.extract_model_dependencies()
-        print(f"Extracted {len(dependencies)} models")
         nodes = extractor.extract_nodes()
         print(nodes)
+        dependencies = extractor.extract_model_dependencies()
+        print(dependencies)
 
         return 0
 
