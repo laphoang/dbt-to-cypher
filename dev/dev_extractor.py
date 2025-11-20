@@ -21,6 +21,8 @@ def main():
         extractor.load_file()
         dependencies = extractor.extract_model_dependencies()
         print(f"Extracted {len(dependencies)} models")
+        nodes = extractor.extract_nodes()
+        print(nodes)
 
         return 0
 

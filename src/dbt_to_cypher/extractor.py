@@ -73,6 +73,26 @@ class DbtDependencyExtractor:
 
         return
 
+    def extract_nodes(self) -> Dict[str, Any]:
+        """
+        Extract nodes from the dbt project.
+
+        Returns:
+            Dictionary containing node information
+        """
+        nodes: Dict[str, Any] = {}
+        for node_id, node in self.manifest.nodes.items():
+            # Get catalog columns for this node
+            catalog_node = self.catalog.nodes.get(node_id)
+            columns = catalog_node.columns if catalog_node else {}
+
+            # Convert node to dict and add computed fields
+            node_dict = node.model_dump() if hasattr(node, "model_dump") else node.dict()
+            node_dict["fqn"] = f"{node.database}.{node.schema_}.{node.name}"
+            nodes[node_id] = node_dict
+            node_dict["columns"] = columns
+        return nodes
+
     def extract_model_dependencies(self) -> Dict:
         """
         Extract model-level dependencies from the dbt project.
@@ -80,8 +100,16 @@ class DbtDependencyExtractor:
         Returns:
             Dictionary containing model dependency information
         """
-        print(self.manifest)
-        print(self.catalog)
+        # print(self.manifest)
+        # print(self.catalog)
+
+        for node_id, node in self.manifest.nodes.items():
+            print(f"ID: {node_id}")
+            print(f"Resource Type: {node.resource_type}")
+            print(f"Name: {node.name}")
+            print(node)
+            print("---")
+
         raise NotImplementedError("Model dependency extraction not yet implemented")
 
     def extract_column_dependencies(self) -> Dict:
