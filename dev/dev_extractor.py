@@ -13,7 +13,12 @@ def main():
     try:
         load_dotenv()  # Load .env file
         # Extract dependencies
-        extractor = DbtDependencyExtractor(os.getenv("PROJECT_PATH"))
+        project_path = os.getenv("PROJECT_PATH")
+        if not project_path:
+            raise ValueError("PROJECT_PATH environment variable not set")
+
+        extractor = DbtDependencyExtractor(project_path)
+        extractor.load_file()
         dependencies = extractor.extract_model_dependencies()
         print(f"Extracted {len(dependencies)} models")
 

@@ -26,8 +26,10 @@ class DbtDependencyExtractor:
         self.project_path = Path(project_path)
         self.manifest_path = self.project_path / "target" / "manifest.json"
         self.catalog_path = self.project_path / "target" / "catalog.json"
+        self.manifest_data: Dict[str, Any] = {}
+        self.catalog_data: Dict[str, Any] = {}
 
-    def _load_file(self, file_path: Path) -> Dict[str, Any]:
+    def load_file(self) -> None:
         """
         Load a dbt JSON file.
 
@@ -41,11 +43,17 @@ class DbtDependencyExtractor:
             FileNotFoundError: If the file does not exist
             json.JSONDecodeError: If the file is not valid JSON
         """
-        if not file_path.exists():
-            raise FileNotFoundError(f"File not found: {file_path}")
+        if not self.manifest_path.exists():
+            raise FileNotFoundError(f"File not found: {self.manifest_path}")
+        if not self.catalog_path.exists():
+            raise FileNotFoundError(f"File not found: {self.catalog_path}")
 
-        with open(file_path, encoding="utf-8") as fp:
-            return json.load(fp)  # type: ignore[no-any-return]
+        with open(self.manifest_path, encoding="utf-8") as fp:
+            self.manifest_data = json.load(fp)
+        with open(self.catalog_path, encoding="utf-8") as fp:
+            self.catalog_data = json.load(fp)
+
+        return
 
     def extract_model_dependencies(self) -> Dict:
         """
@@ -54,8 +62,7 @@ class DbtDependencyExtractor:
         Returns:
             Dictionary containing model dependency information
         """
-        manifest_dict = self._load_file(self.manifest_path)
-        print(manifest_dict)
+        print(self.manifest_data)
         raise NotImplementedError("Model dependency extraction not yet implemented")
 
     def extract_column_dependencies(self) -> Dict:
