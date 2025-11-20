@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
+from dbt_artifacts_parser.parser import parse_catalog, parse_manifest
+
 
 class DbtDependencyExtractor:
     """
@@ -26,8 +28,8 @@ class DbtDependencyExtractor:
         self.project_path = Path(project_path)
         self.manifest_path = self.project_path / "target" / "manifest.json"
         self.catalog_path = self.project_path / "target" / "catalog.json"
-        self.manifest_data: Dict[str, Any] = {}
-        self.catalog_data: Dict[str, Any] = {}
+        self.manifest: Any
+        self.catalog: Any
 
     def load_file(self) -> None:
         """
@@ -49,9 +51,25 @@ class DbtDependencyExtractor:
             raise FileNotFoundError(f"File not found: {self.catalog_path}")
 
         with open(self.manifest_path, encoding="utf-8") as fp:
-            self.manifest_data = json.load(fp)
+            manifest_dict = json.load(fp)
+
+            # Filter out test nodes to avoid Pydantic validation errors in dbt-artifacts-parser, remove after dbt-artifacts-parser fix
+            if "nodes" in manifest_dict:
+                manifest_dict["nodes"] = {
+                    k: v for k, v in manifest_dict["nodes"].items() if not k.startswith("test.")
+                }
+
+            self.manifest = parse_manifest(manifest=manifest_dict)
+
         with open(self.catalog_path, encoding="utf-8") as fp:
-            self.catalog_data = json.load(fp)
+            catalog_dict = json.load(fp)
+
+            # Remove extra metadata fields to avoid Pydantic validation errors in dbt-artifacts-parser, remove after dbt-artifacts-parser fix
+            if "metadata" in catalog_dict:
+                if "invocation_started_at" in catalog_dict["metadata"]:
+                    del catalog_dict["metadata"]["invocation_started_at"]
+
+            self.catalog = parse_catalog(catalog=catalog_dict)
 
         return
 
@@ -62,7 +80,8 @@ class DbtDependencyExtractor:
         Returns:
             Dictionary containing model dependency information
         """
-        print(self.manifest_data)
+        print(self.manifest)
+        print(self.catalog)
         raise NotImplementedError("Model dependency extraction not yet implemented")
 
     def extract_column_dependencies(self) -> Dict:
