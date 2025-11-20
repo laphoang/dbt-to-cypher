@@ -23,6 +23,8 @@ def main():
         print(nodes)
         dependencies = extractor.extract_model_dependencies()
         print(dependencies)
+        col_deps = extractor.extract_column_dependencies()
+        print(col_deps)
 
         return 0
 

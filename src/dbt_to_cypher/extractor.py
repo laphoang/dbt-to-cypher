@@ -4,9 +4,10 @@ Module for extracting dependencies from dbt projects.
 
 import json
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from dbt_artifacts_parser.parser import parse_catalog, parse_manifest
+from dbt_colibri.lineage_extractor.extractor import DbtColumnLineageExtractor
 
 
 class DbtDependencyExtractor:
@@ -73,14 +74,14 @@ class DbtDependencyExtractor:
 
         return
 
-    def extract_nodes(self) -> Dict[str, Any]:
+    def extract_nodes(self) -> dict[str, Any]:
         """
         Extract nodes from the dbt project.
 
         Returns:
             Dictionary containing node information
         """
-        nodes: Dict[str, Any] = {}
+        nodes: dict[str, Any] = {}
         for node_id, node in self.manifest.nodes.items():
             # Get catalog columns for this node
             catalog_node = self.catalog.nodes.get(node_id)
@@ -93,30 +94,32 @@ class DbtDependencyExtractor:
             node_dict["columns"] = columns
         return nodes
 
-    def extract_model_dependencies(self) -> Dict[str, Any]:
+    def extract_model_dependencies(self) -> dict[str, Any]:
         """
         Extract model-level dependencies from the dbt project.
 
         Returns:
             Dictionary containing model dependency information
         """
-        dependencies: Dict[str, Any] = {}
+        dependencies: dict[str, Any] = {}
         for node_id, node in self.manifest.nodes.items():
             dependencies[node_id] = node.depends_on.nodes
 
         return dependencies
 
-    def extract_column_dependencies(self) -> Dict:
+    def extract_column_dependencies(self) -> Any:
         """
         Extract column-level dependencies from the dbt project.
 
         Returns:
-            Dictionary containing column lineage information
+            Dictionary containing column lineage information mapped by model unique_id
         """
-        # TODO: Implement column lineage extraction
-        raise NotImplementedError("Column dependency extraction not yet implemented")
+        extractor = DbtColumnLineageExtractor(self.manifest_path, self.catalog_path)
+        lineage = extractor.build_lineage_map()
 
-    def extract_all(self) -> Dict:
+        return lineage
+
+    def extract_all(self) -> dict:
         """
         Extract both model and column-level dependencies.
 
