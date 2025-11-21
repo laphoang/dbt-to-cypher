@@ -92,6 +92,15 @@ class DbtDependencyExtractor:
             node_dict["fqn"] = f"{node.database}.{node.schema_}.{node.name}"
             nodes[node_id] = node_dict
             node_dict["columns"] = columns
+
+            for column_name, column in columns.items():
+                # Convert column to dict and add computed fields
+                column_name = f"{node_id}.{column_name}"
+                column_fqn = f"{node.database}.{node.schema_}.{node.name}.{column_name}"
+                column_dict = column.model_dump() if hasattr(column, "model_dump") else column.dict()
+                column_dict["fqn"] = column_fqn
+                nodes[column_name] = column_dict
+
         return nodes
 
     def extract_model_dependencies(self) -> dict[str, Any]:
