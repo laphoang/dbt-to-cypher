@@ -5,8 +5,9 @@ Command-line interface for dbt-to-cypher.
 import os
 import sys
 
-from dbt_to_cypher.extractor import DbtDependencyExtractor
 from dotenv import load_dotenv
+
+from dbt_to_cypher.extractor import DbtDependencyExtractor
 
 
 def main():

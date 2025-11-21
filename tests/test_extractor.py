@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+
 from dbt_to_cypher.extractor import DbtDependencyExtractor
 
 

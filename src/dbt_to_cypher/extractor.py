@@ -97,7 +97,9 @@ class DbtDependencyExtractor:
                 # Convert column to dict and add computed fields
                 column_name = f"{node_id}.{column_name}"
                 column_fqn = f"{node.database}.{node.schema_}.{node.name}.{column_name}"
-                column_dict = column.model_dump() if hasattr(column, "model_dump") else column.dict()
+                column_dict = (
+                    column.model_dump() if hasattr(column, "model_dump") else column.dict()
+                )
                 column_dict["fqn"] = column_fqn
                 nodes[column_name] = column_dict
 
@@ -116,17 +118,52 @@ class DbtDependencyExtractor:
 
         return dependencies
 
-    def extract_column_dependencies(self) -> Any:
+    def extract_column_dependencies(self) -> dict[str, list[str]]:
         """
         Extract column-level dependencies from the dbt project.
 
         Returns:
-            Dictionary containing column lineage information mapped by model unique_id
+            Dictionary mapping column FQN to list of dependent column FQNs.
+            Format: {"model.package.model_name.column_name": ["upstream_model.column_name", ...]}
         """
         extractor = DbtColumnLineageExtractor(self.manifest_path, self.catalog_path)
         lineage = extractor.build_lineage_map()
 
-        return lineage
+        # Transform lineage into column: [depends_on_columns] format
+        column_dependencies: dict[str, list[str]] = {}
+
+        for model_id, columns in lineage.items():
+            for column_name, node in columns.items():
+                # Build the full column identifier
+                column_fqn = f"{model_id}.{column_name}"
+
+                # Extract upstream column dependencies
+                upstream_columns = []
+                if hasattr(node, "downstream") and node.downstream:
+                    for downstream_node in node.downstream:
+                        if hasattr(downstream_node, "name") and downstream_node.name:
+                            # The name contains the column name with the table alias
+                            # Example: "model_1.customer_id" or "a.first_name"
+                            parts = downstream_node.name.split(".")
+                            if len(parts) == 2:
+                                table_ref, col_name = parts
+
+                                # Extract model reference from the downstream node's table expression
+                                if hasattr(downstream_node, "expression"):
+                                    expr = downstream_node.expression
+                                    # Try to get the actual table/model name
+                                    if hasattr(expr, "this") and hasattr(expr.this, "this"):
+                                        table_name = str(expr.this.this)
+
+                                        # Find the corresponding model_id for this table reference
+                                        for mid in lineage.keys():
+                                            if mid.endswith(f".{table_name}"):
+                                                upstream_columns.append(f"{mid}.{col_name}")
+                                                break
+
+                column_dependencies[column_fqn] = upstream_columns
+
+        return column_dependencies
 
     def extract_all(self) -> dict:
         """
