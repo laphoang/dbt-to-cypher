@@ -52,11 +52,11 @@ def build_dependency_graph(dependencies: Dict[str, Any]) -> DependencyGraph:
     # Add column nodes
     columns = dependencies.get("columns", {}) if isinstance(dependencies, dict) else {}
     for column, col_data in columns.items():
-        graph.add_column(column, metadata=col_data)
-        # Add edge from model to column
         model_name = col_data.get("model_name", "")
         if model_name:
-            graph.add_dependency(model_name, column, relationship="has_column")
+            # Extract column name from full identifier (e.g., "model.column" -> "column")
+            col_name = column.split(".")[-1] if "." in column else column
+            graph.add_column(model_name, col_name, metadata=col_data)
 
     # Add model-level dependencies
     model_dependencies = dependencies.get("model_dependencies", {}) if isinstance(dependencies, dict) else {}

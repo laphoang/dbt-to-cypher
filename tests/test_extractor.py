@@ -15,19 +15,3 @@ def test_extractor_initialization():
     assert extractor.project_path == project_path
     assert extractor.manifest_path == project_path / "target" / "manifest.json"
     assert extractor.catalog_path == project_path / "target" / "catalog.json"
-
-
-def test_extract_model_dependencies_not_implemented():
-    """Test that extract_model_dependencies raises NotImplementedError."""
-    extractor = DbtDependencyExtractor(Path("/fake/project"))
-
-    with pytest.raises(NotImplementedError):
-        extractor.extract_model_dependencies()
-
-
-def test_extract_column_dependencies_not_implemented():
-    """Test that extract_column_dependencies raises NotImplementedError."""
-    extractor = DbtDependencyExtractor(Path("/fake/project"))
-
-    with pytest.raises(NotImplementedError):
-        extractor.extract_column_dependencies()
