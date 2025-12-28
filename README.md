@@ -4,11 +4,11 @@ Extract dependency graphs from dbt projects (including model and column dependen
 
 ## Features
 
-- 📊 **Model-level dependencies**: Extract relationships between dbt models
-- 🔍 **Column-level lineage**: Track data flow at the column level
-- 🔄 **Cypher generation**: Convert dependency graphs to Neo4j Cypher queries
-- 🛠️ **CLI tool**: Easy command-line interface for quick conversions
-- 📦 **Library API**: Programmatic access for integration into your workflows
+- **Model-level dependencies**: Extract relationships between dbt models
+- **Column-level lineage**: Track data flow at the column level
+- **Cypher generation**: Convert dependency graphs to Neo4j Cypher queries
+- **CLI tool**: Easy command-line interface for quick conversions
+- **Library API**: Programmatic access for integration into your workflows
 
 ## Installation
 
@@ -35,26 +35,19 @@ dbt-to-cypher /path/to/dbt/project
 # Save output to file
 dbt-to-cypher /path/to/dbt/project -o output.cypher
 
-# Include column-level dependencies
-dbt-to-cypher /path/to/dbt/project --include-columns
 ```
 
 ### Python API
 
+The `dbt_to_cypher` module provides a high-level API for programmatic access:
+
 ```python
-from dbt_to_cypher import DbtDependencyExtractor, DependencyGraph, CypherGenerator
+from dbt_to_cypher.dbt_to_cypher import extract_dbt_project
 
-# Extract dependencies from dbt project
-extractor = DbtDependencyExtractor("/path/to/dbt/project")
-dependencies = extractor.extract_all()
-
-# Build dependency graph
-graph = DependencyGraph()
-# ... populate graph with dependencies
-
-# Generate Cypher queries
-generator = CypherGenerator(graph)
-cypher_script = generator.generate_all_queries()
+cypher_script = extract_dbt_project(
+    project_path="/path/to/dbt/project",
+    output_path="output.cypher",  # Optional
+)
 print(cypher_script)
 ```
 
@@ -89,16 +82,24 @@ pytest
 dbt-to-cypher/
 ├── src/
 │   └── dbt_to_cypher/
-│       ├── __init__.py       # Package initialization and exports
-│       ├── extractor.py      # dbt dependency extraction
-│       ├── graph.py          # Dependency graph management
-│       ├── cypher.py         # Cypher query generation
-│       └── cli.py            # Command-line interface
-├── tests/                    # Test suite
-├── pyproject.toml           # PEP 621 project metadata
-├── .pre-commit-config.yaml  # Pre-commit hooks configuration
+│       ├── __init__.py           # Package initialization and exports
+│       ├── dbt_to_cypher.py      # Core API for dbt-to-cypher conversion
+│       ├── extractor.py          # dbt dependency extraction
+│       ├── graph.py              # Dependency graph management
+│       ├── cypher.py             # Cypher query generation
+│       └── cli.py                # Command-line interface
+├── tests/                        # Test suite
+├── pyproject.toml               # PEP 621 project metadata
+├── .pre-commit-config.yaml      # Pre-commit hooks configuration
 └── README.md
 ```
+
+### Core Modules
+
+- **dbt_to_cypher.py**: Main API module providing high-level functions for the conversion pipeline
+- **extractor.py**: Parses dbt `manifest.json` and `catalog.json` to extract model and column-level dependencies
+- **graph.py**: Builds and manages a NetworkX-based dependency graph with models and columns as nodes
+- **cypher.py**: Generates Neo4j Cypher CREATE statements from the dependency graph
 
 ## Requirements
 
