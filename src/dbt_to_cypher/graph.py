@@ -40,7 +40,7 @@ class DependencyGraph:
         self.graph.add_node(
             column_name, node_type="column", **(metadata or {})
         )
-        
+
     def add_dependency(self, source: str, target: str, relationship: str = "depends_on"):
         """
         Add a dependency edge between nodes.
