@@ -38,15 +38,10 @@ def main():
         help="Output file for Cypher queries (default: stdout)",
     )
 
-    parser.add_argument(
-        "--include-columns",
-        action="store_true",
-        help="Include column-level dependencies",
-    )
-
     args = parser.parse_args()
 
     try:
+        print(f"Loading dbt project from: {args.project_path}")
         # Extract dependencies
         extractor = DbtDependencyExtractor(args.project_path)
         dependencies = extractor.extract_all()
@@ -56,33 +51,26 @@ def main():
 
         # Populate graph from model-level dependencies
         models = dependencies.get("models", {}) if isinstance(dependencies, dict) else {}
-        for model in models.keys():
-            graph.add_model(model)
+        for model, model_data in models.items():
+            graph.add_model(model, metadata=model_data)
 
-        for model, upstreams in models.items():
+        columns = dependencies.get("columns", {}) if isinstance(dependencies, dict) else {}
+        for column, col_data in columns.items():
+            graph.add_column(column, metadata=col_data)
+            graph.add_dependency(col_data.get("model_name", ""), column, relationship="has_column")
+
+        model_dependencies = dependencies.get("model_dependencies", {}) if isinstance(dependencies, dict) else {}
+        for model, upstreams in model_dependencies.items():
             for upstream in upstreams:
                 # ensure upstream model node exists
-                graph.add_model(upstream)
-                graph.add_dependency(upstream, model)
+                graph.add_dependency(model, upstream)
 
-        # Populate graph from column-level dependencies (if present)
-        columns = dependencies.get("columns", {}) if isinstance(dependencies, dict) else {}
-        for col_fqn, upstream_cols in columns.items():
-            # split into model and column name
-            if "." not in col_fqn:
-                continue
-            model_name, column_name = col_fqn.rsplit(".", 1)
-            graph.add_model(model_name)
-            graph.add_column(model_name, column_name)
+        column_dependencies = dependencies.get("column_dependencies", {}) if isinstance(dependencies, dict) else {}
+        for column, upstreams in column_dependencies.items():
+            for upstream in upstreams:
+                # ensure upstream model node exists
+                graph.add_dependency(column, upstream)
 
-            for up_col in upstream_cols:
-                if "." not in up_col:
-                    continue
-                up_model, up_column = up_col.rsplit(".", 1)
-                graph.add_model(up_model)
-                graph.add_column(up_model, up_column)
-                # add dependency edge from upstream column to this column
-                graph.add_dependency(f"{up_model}.{up_column}", f"{model_name}.{column_name}")
 
         print(f"Extracted dependencies: {len(models)} model groups, {len(columns)} column entries")
 
