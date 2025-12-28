@@ -29,22 +29,18 @@ class DependencyGraph:
         """
         self.graph.add_node(model_name, node_type="model", **(metadata or {}))
 
-    def add_column(self, model_name: str, column_name: str, metadata: Optional[Dict] = None):
+    def add_column(self, column_name: str, metadata: Optional[Dict] = None):
         """
         Add a column node to the graph.
 
         Args:
-            model_name: Parent model identifier
             column_name: Column name
             metadata: Additional column metadata
         """
-        node_id = f"{model_name}.{column_name}"
         self.graph.add_node(
-            node_id, node_type="column", model=model_name, column=column_name, **(metadata or {})
+            column_name, node_type="column", **(metadata or {})
         )
-        # Add edge from model to column
-        self.graph.add_edge(model_name, node_id, relationship="contains")
-
+        
     def add_dependency(self, source: str, target: str, relationship: str = "depends_on"):
         """
         Add a dependency edge between nodes.
