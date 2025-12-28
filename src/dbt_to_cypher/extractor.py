@@ -172,6 +172,10 @@ class DbtDependencyExtractor:
         Returns:
             Complete dependency graph data structure
         """
+        # Ensure manifest/catalog are loaded before extracting
+        if not getattr(self, "manifest", None) or not getattr(self, "catalog", None):
+            self.load_file()
+
         return {
             "models": self.extract_model_dependencies(),
             "columns": self.extract_column_dependencies(),
