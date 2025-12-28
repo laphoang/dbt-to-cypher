@@ -50,11 +50,41 @@ def main():
         # Extract dependencies
         extractor = DbtDependencyExtractor(args.project_path)
         dependencies = extractor.extract_all()
-
+        print('dependencies:', dependencies)
         # Build graph
         graph = DependencyGraph()
-        # TODO: Populate graph from dependencies
-        print(f"Extracted dependencies: {len(dependencies)} groups")
+
+        # Populate graph from model-level dependencies
+        models = dependencies.get("models", {}) if isinstance(dependencies, dict) else {}
+        for model in models.keys():
+            graph.add_model(model)
+
+        for model, upstreams in models.items():
+            for upstream in upstreams:
+                # ensure upstream model node exists
+                graph.add_model(upstream)
+                graph.add_dependency(upstream, model)
+
+        # Populate graph from column-level dependencies (if present)
+        columns = dependencies.get("columns", {}) if isinstance(dependencies, dict) else {}
+        for col_fqn, upstream_cols in columns.items():
+            # split into model and column name
+            if "." not in col_fqn:
+                continue
+            model_name, column_name = col_fqn.rsplit(".", 1)
+            graph.add_model(model_name)
+            graph.add_column(model_name, column_name)
+
+            for up_col in upstream_cols:
+                if "." not in up_col:
+                    continue
+                up_model, up_column = up_col.rsplit(".", 1)
+                graph.add_model(up_model)
+                graph.add_column(up_model, up_column)
+                # add dependency edge from upstream column to this column
+                graph.add_dependency(f"{up_model}.{up_column}", f"{model_name}.{column_name}")
+
+        print(f"Extracted dependencies: {len(models)} model groups, {len(columns)} column entries")
 
         # Generate Cypher
         generator = CypherGenerator(graph)
