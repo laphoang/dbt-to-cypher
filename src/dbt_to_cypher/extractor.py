@@ -74,34 +74,59 @@ class DbtDependencyExtractor:
 
         return
 
-    def extract_nodes(self) -> dict[str, Any]:
+    def extract_columns(self) -> dict[str, Any]:
         """
-        Extract nodes from the dbt project.
+        Extract columns from the dbt project.
 
         Returns:
-            Dictionary containing node information
+            Dictionary containing column information
+        """
+        nodes: dict[str, Any] = {}
+        for node_id, catalog_node in self.catalog.nodes.items():
+            # Get catalog columns for this node
+            columns = getattr(catalog_node, "columns", {}) or {}
+
+            for column_name, column in columns.items():
+                # Convert column to dict and add computed fields
+                name = f"{node_id}.{column_name}"
+                column_dict = (
+                    column.model_dump() if hasattr(column, "model_dump") else (column.dict() if hasattr(column, "dict") else dict(column))
+                )
+                column_dict["name"] = name
+                column_dict["model_name"] = node_id
+                nodes[name] = column_dict
+
+        return nodes
+
+    def extract_models(self) -> dict[str, Any]:
+        """
+        Extract models from the dbt project.
+
+        Returns:
+            Dictionary containing model information
         """
         nodes: dict[str, Any] = {}
         for node_id, node in self.manifest.nodes.items():
             # Get catalog columns for this node
             catalog_node = self.catalog.nodes.get(node_id)
-            columns = catalog_node.columns if catalog_node else {}
+            columns = getattr(catalog_node, "columns", {}) or {}
 
-            # Convert node to dict and add computed fields
-            node_dict = node.model_dump() if hasattr(node, "model_dump") else node.dict()
-            node_dict["fqn"] = f"{node.database}.{node.schema_}.{node.name}"
+            # Build a minimal node dict containing only the selected attributes
+            db = getattr(node, "database", None) or getattr(node, "database_name", None)
+            schema = getattr(node, "schema_", None) or getattr(node, "schema", None)
+            name = getattr(node, "name", None)
+
+            node_dict: dict[str, Any] = {
+                "fqn": f"{db}.{schema}.{name}",
+                "materialization": getattr(getattr(node, "config", None), "materialized", None),
+                "database": db,
+                "schema": schema,
+                "resource_type": getattr(node, "resource_type", None),
+                #"compiled_code": getattr(node, "compiled_code", None),
+                "columns": columns,
+            }
+
             nodes[node_id] = node_dict
-            node_dict["columns"] = columns
-
-            for column_name, column in columns.items():
-                # Convert column to dict and add computed fields
-                column_name = f"{node_id}.{column_name}"
-                column_fqn = f"{node.database}.{node.schema_}.{node.name}.{column_name}"
-                column_dict = (
-                    column.model_dump() if hasattr(column, "model_dump") else column.dict()
-                )
-                column_dict["fqn"] = column_fqn
-                nodes[column_name] = column_dict
 
         return nodes
 
@@ -177,6 +202,8 @@ class DbtDependencyExtractor:
             self.load_file()
 
         return {
-            "models": self.extract_model_dependencies(),
-            "columns": self.extract_column_dependencies(),
+            "models": self.extract_models(),
+            "columns": self.extract_columns(),
+            "model_dependencies": self.extract_model_dependencies(),
+            "column_dependencies": self.extract_column_dependencies(),
         }
