@@ -121,18 +121,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Release a new version in PyPi
 
-The project has a CICD pipeline to automatically release new versions.
+Update version name in `pyproject.toml`, and create a new release in Github to release a new version.
 The new release will need to be in main branch only.
-You can use Make to automatically release a new version with a CLI command. This will do:
-
-- Update version in pyproject.toml
-- Commit the change
-- Create a correctly formatted tag
-- Push the tag → triggers CI publish to PyPI
-
-```bash
-make release version=x.x.x
-```
+It will automatically publish to PyPi.
 
 ## Roadmap
 
