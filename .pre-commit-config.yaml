@@ -11,16 +11,28 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+  # -------------------------
+  # Local hooks for uv + ruff + mypy
+  # -------------------------
+  - repo: local
     hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-      - id: ruff-format
+      - id: ruff-check
+        name: Ruff Lint Check
+        entry: uv
+        language: system
+        args: ["run", "ruff", "check", "src", "tests"]
+        pass_filenames: false
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
+      - id: ruff-format-check
+        name: Ruff Format Check
+        entry: uv
+        language: system
+        args: ["run", "ruff", "format", "--check", "src", "tests"]
+        pass_filenames: false
+
       - id: mypy
-        additional_dependencies: [types-PyYAML]
-        args: [--ignore-missing-imports]
+        name: Type Checking with Mypy
+        entry: uv
+        language: system
+        args: ["run", "mypy", "src"]
+        pass_filenames: false
