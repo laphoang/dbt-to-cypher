@@ -2,8 +2,6 @@
 Module for generating Cypher queries from dependency graphs.
 """
 
-from typing import Dict, List
-
 from dbt_to_cypher.graph import DependencyGraph
 
 
@@ -24,7 +22,7 @@ class CypherGenerator:
         """
         self.graph = graph
 
-    def generate_node_queries(self) -> List[str]:
+    def generate_node_queries(self) -> list[str]:
         """
         Generate Cypher queries to create nodes.
 
@@ -47,7 +45,7 @@ class CypherGenerator:
 
         return queries
 
-    def generate_relationship_queries(self) -> List[str]:
+    def generate_relationship_queries(self) -> list[str]:
         """
         Generate Cypher queries to create relationships.
 
@@ -76,12 +74,12 @@ class CypherGenerator:
         all_queries = node_queries + relationship_queries
         return ";\n".join(all_queries) + ";"
 
-    def _generate_model_node_query(self, node_id: str, attrs: Dict) -> str:
+    def _generate_model_node_query(self, node_id: str, attrs: dict) -> str:
         """Generate Cypher for a model node."""
         props = self._format_properties(attrs)
         return f"MERGE (m:Model {{name: '{node_id}'{props}}})"
 
-    def _generate_column_node_query(self, node_id: str, attrs: Dict) -> str:
+    def _generate_column_node_query(self, node_id: str, attrs: dict) -> str:
         """Generate Cypher for a column node."""
         props = self._format_properties(attrs)
         return f"MERGE (c:Column {{id: '{node_id}'{props}}})"
@@ -94,7 +92,7 @@ class CypherGenerator:
             f"MERGE (s)-[:{rel_type_upper}]->(t)"
         )
 
-    def _format_properties(self, attrs: Dict) -> str:
+    def _format_properties(self, attrs: dict) -> str:
         """Format node properties for Cypher."""
         # Filter out non-serializable or internal properties
         exclude_keys = {"node_type"}

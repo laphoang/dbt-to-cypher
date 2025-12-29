@@ -90,7 +90,9 @@ class DbtDependencyExtractor:
                 # Convert column to dict and add computed fields
                 name = f"{node_id}.{column_name}"
                 column_dict = (
-                    column.model_dump() if hasattr(column, "model_dump") else (column.dict() if hasattr(column, "dict") else dict(column))
+                    column.model_dump()
+                    if hasattr(column, "model_dump")
+                    else (column.dict() if hasattr(column, "dict") else dict(column))
                 )
                 column_dict["name"] = name
                 column_dict["model_name"] = node_id
@@ -122,7 +124,7 @@ class DbtDependencyExtractor:
                 "database": db,
                 "schema": schema,
                 "resource_type": getattr(node, "resource_type", None),
-                #"compiled_code": getattr(node, "compiled_code", None),
+                # "compiled_code": getattr(node, "compiled_code", None),
                 "columns": columns,
             }
 

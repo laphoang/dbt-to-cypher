@@ -16,6 +16,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
+
 def main():
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(

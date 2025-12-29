@@ -61,21 +61,3 @@ jobs:
           uv run ruff check src tests
           uv run ruff format --check src tests
           uv run mypy src
-
-  pre-commit:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install pre-commit
-        run: |
-          pip install pre-commit
-
-      - name: Run pre-commit
-        uses: pre-commit/action@v3.0.1

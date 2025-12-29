@@ -2,7 +2,7 @@
 Module for building and managing dependency graphs.
 """
 
-from typing import Any, Dict, Optional, Set
+from typing import Any, Optional
 
 import networkx as nx
 
@@ -19,7 +19,7 @@ class DependencyGraph:
         """Initialize an empty dependency graph."""
         self.graph = nx.DiGraph()
 
-    def add_model(self, model_name: str, metadata: Optional[Dict] = None):
+    def add_model(self, model_name: str, metadata: Optional[dict] = None):
         """
         Add a model node to the graph.
 
@@ -29,7 +29,7 @@ class DependencyGraph:
         """
         self.graph.add_node(model_name, node_type="model", **(metadata or {}))
 
-    def add_column(self, model_name: str, column_name: str, metadata: Optional[Dict] = None):
+    def add_column(self, model_name: str, column_name: str, metadata: Optional[dict] = None):
         """
         Add a column node to the graph and connect it to its parent model.
 
@@ -56,7 +56,7 @@ class DependencyGraph:
         """
         self.graph.add_edge(source, target, relationship=relationship)
 
-    def get_upstream_dependencies(self, node: str) -> Set[str]:
+    def get_upstream_dependencies(self, node: str) -> set[str]:
         """
         Get all upstream dependencies for a node.
 
@@ -68,7 +68,7 @@ class DependencyGraph:
         """
         return set(self.graph.predecessors(node))
 
-    def get_downstream_dependencies(self, node: str) -> Set[str]:
+    def get_downstream_dependencies(self, node: str) -> set[str]:
         """
         Get all downstream dependencies for a node.
 
@@ -80,7 +80,7 @@ class DependencyGraph:
         """
         return set(self.graph.successors(node))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Export the graph as a dictionary.
 

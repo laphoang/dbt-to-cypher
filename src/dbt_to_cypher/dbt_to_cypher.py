@@ -6,7 +6,7 @@ This module provides the main API for extracting dbt dependencies and generating
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional, Union
 
 from dbt_to_cypher.cypher import CypherGenerator
 from dbt_to_cypher.extractor import DbtDependencyExtractor
@@ -18,7 +18,8 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
-def extract_dependencies(project_path: Path | str) -> Dict[str, Any]:
+
+def extract_dependencies(project_path: Union[Path, str]) -> dict[str, Any]:
     """
     Extract all dependencies from a dbt project.
 
@@ -32,7 +33,7 @@ def extract_dependencies(project_path: Path | str) -> Dict[str, Any]:
     return extractor.extract_all()
 
 
-def build_dependency_graph(dependencies: Dict[str, Any]) -> DependencyGraph:
+def build_dependency_graph(dependencies: dict[str, Any]) -> DependencyGraph:
     """
     Build a dependency graph from extracted dependencies.
 
@@ -59,13 +60,17 @@ def build_dependency_graph(dependencies: Dict[str, Any]) -> DependencyGraph:
             graph.add_column(model_name, col_name, metadata=col_data)
 
     # Add model-level dependencies
-    model_dependencies = dependencies.get("model_dependencies", {}) if isinstance(dependencies, dict) else {}
+    model_dependencies = (
+        dependencies.get("model_dependencies", {}) if isinstance(dependencies, dict) else {}
+    )
     for model, upstreams in model_dependencies.items():
         for upstream in upstreams:
             graph.add_dependency(model, upstream)
 
     # Add column-level dependencies
-    column_dependencies = dependencies.get("column_dependencies", {}) if isinstance(dependencies, dict) else {}
+    column_dependencies = (
+        dependencies.get("column_dependencies", {}) if isinstance(dependencies, dict) else {}
+    )
     for column, upstreams in column_dependencies.items():
         for upstream in upstreams:
             graph.add_dependency(column, upstream)
@@ -88,8 +93,8 @@ def generate_cypher_queries(graph: DependencyGraph) -> str:
 
 
 def extract_dbt_project(
-    project_path: Path | str,
-    output_path: Optional[Path | str] = None,
+    project_path: Union[Path, str],
+    output_path: Optional[Union[Path, str]] = None,
 ) -> str:
     """
     Main process: extract dbt dependencies, build graph, and generate Cypher.
