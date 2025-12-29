@@ -1,11 +1,8 @@
 name: Publish to PyPI
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - "v*" # triggers when pushing a tag like v0.1.0
+  release:
+    types: [created] # Trigger only when a release is created
 
 jobs:
   build-and-publish:
