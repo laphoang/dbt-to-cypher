@@ -123,7 +123,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 The project has a CICD pipeline to automatically release new versions.
 The new release will need to be in main branch only.
-You can use Make to automatically release a new version with a CLI command. This will do:
+You can run release.py to automatically release a new version with a CLI command. This will do:
 
 - Update version in pyproject.toml
 - Commit the change
@@ -131,7 +131,7 @@ You can use Make to automatically release a new version with a CLI command. This
 - Push the tag → triggers CI publish to PyPI
 
 ```bash
-make release version=x.x.x
+uv run python release.py --version x.x.x
 ```
 
 ## Roadmap
