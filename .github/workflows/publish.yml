@@ -33,6 +33,5 @@ jobs:
 
       - name: Publish to PyPI
         env:
-          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          uv publish --password-env PYPI_TOKEN
+          UV_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish
