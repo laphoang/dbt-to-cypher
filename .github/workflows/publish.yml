@@ -4,6 +4,10 @@ on:
   release:
     types: [created] # Trigger only when a release is created
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build-and-publish:
     name: Build and Publish
@@ -34,4 +38,4 @@ jobs:
       - name: Publish to PyPI
         env:
           UV_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: uv publish
+        run: uv publish --no-trusted
