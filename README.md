@@ -102,7 +102,7 @@ dbt-to-cypher/
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.9+
 - dbt project with generated `manifest.json` and `catalog.json` (run `dbt compile` and `dbt docs generate` first)
 
 ## License
@@ -118,6 +118,21 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Release a new version in PyPi
+
+The project has a CICD pipeline to automatically release new versions.
+The new release will need to be in main branch only.
+You can use Make to automatically release a new version with a CLI command. This will do:
+
+- Update version in pyproject.toml
+- Commit the change
+- Create a correctly formatted tag
+- Push the tag → triggers CI publish to PyPI
+
+```bash
+make release version=x.x.x
+```
 
 ## Roadmap
 
