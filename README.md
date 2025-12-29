@@ -42,7 +42,7 @@ dbt-to-cypher /path/to/dbt/project -o output.cypher
 The `dbt_to_cypher` module provides a high-level API for programmatic access:
 
 ```python
-from dbt_to_cypher.dbt_to_cypher import extract_dbt_project
+from dbt_to_cypher import extract_dbt_project
 
 cypher_script = extract_dbt_project(
     project_path="/path/to/dbt/project",
@@ -66,8 +66,7 @@ uv venv
 .venv\Scripts\activate  # Windows
 # source .venv/bin/activate  # Linux/Mac
 
-uv pip install -e .
-uv pip install -r requirements-dev.txt
+uv pip install -e ".[dev]"
 
 # Install pre-commit hooks
 pre-commit install
@@ -104,7 +103,7 @@ dbt-to-cypher/
 ## Requirements
 
 - Python 3.8+
-- dbt project with generated `manifest.json` (run `dbt compile` or `dbt run` first)
+- dbt project with generated `manifest.json` and `catalog.json` (run `dbt compile` and `dbt docs generate` first)
 
 ## License
 
