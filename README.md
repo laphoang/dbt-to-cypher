@@ -42,7 +42,7 @@ dbt-to-cypher /path/to/dbt/project -o output.cypher
 The `dbt_to_cypher` module provides a high-level API for programmatic access:
 
 ```python
-from dbt_to_cypher.dbt_to_cypher import extract_dbt_project
+from dbt_to_cypher import extract_dbt_project
 
 cypher_script = extract_dbt_project(
     project_path="/path/to/dbt/project",
@@ -66,8 +66,7 @@ uv venv
 .venv\Scripts\activate  # Windows
 # source .venv/bin/activate  # Linux/Mac
 
-uv pip install -e .
-uv pip install -r requirements-dev.txt
+uv pip install -e ".[dev]"
 
 # Install pre-commit hooks
 pre-commit install
@@ -103,8 +102,8 @@ dbt-to-cypher/
 
 ## Requirements
 
-- Python 3.8+
-- dbt project with generated `manifest.json` (run `dbt compile` or `dbt run` first)
+- Python 3.9+
+- dbt project with generated `manifest.json` and `catalog.json` (run `dbt compile` and `dbt docs generate` first)
 
 ## License
 
@@ -119,6 +118,21 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## Release a new version in PyPi
+
+The project has a CICD pipeline to automatically release new versions.
+The new release will need to be in main branch only.
+You can use Make to automatically release a new version with a CLI command. This will do:
+
+- Update version in pyproject.toml
+- Commit the change
+- Create a correctly formatted tag
+- Push the tag → triggers CI publish to PyPI
+
+```bash
+make release version=x.x.x
+```
 
 ## Roadmap
 
