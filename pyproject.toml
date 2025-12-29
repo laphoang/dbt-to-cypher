@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dbt-to-cypher"
-version = "0.1.0"
+version = "0.1.1"
 description = "Extract dependency graphs from dbt (including model and column dependencies) and convert them to Cypher queries"
 readme = "README.md"
 requires-python = ">=3.9"
